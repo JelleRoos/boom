@@ -1,51 +1,53 @@
-< !DOCTYPE html>
-    <html lang="nl">
+<!DOCTYPE html>
+<html lang="nl">
 
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Interactieve Boom-tool</title>
-        <link rel="stylesheet" href="style.css" />
-    </head>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactieve Boom-tool</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
 
-    <body>
+<body>
 
-        <header>
-            <img src="img/boom.png" alt="Boom" id="boom-afbeelding" />
-        </header>
+    <header>
+        <img src="img/boom.png" alt="Boom" id="boom-afbeelding" />
+    </header>
 
-        <main>
-            <aside class="toolbox">
-                <h2>Toolbox</h2>
-                <!-- Sleepbare elementen komen hier -->
-            </aside>
+    <main>
+        <aside class="toolbox">
+            <h2>Toolbox</h2>
+            <div class="kaart-template" data-type="wortel">
+                🌱 Wortelkaart
+            </div>
+        </aside>
 
-            <section id="grid-container">
-                <div id="grid"></div>
-            </section>
+        <section id="grid-container">
+            <div id="grid"></div>
+        </section>
 
-            <aside class="notes">
-                <h2>Notities</h2>
-                <div class="note-zone" data-zone="lucht">
-                    <h3>🌤️ Lucht</h3>
-                    <div class="note-content"></div>
-                </div>
-                <div class="note-zone" data-zone="takken">
-                    <h3>🌿 Takken</h3>
-                    <div class="note-content"></div>
-                </div>
-                <div class="note-zone" data-zone="stam">
-                    <h3>🪵 Stam</h3>
-                    <div class="note-content"></div>
-                </div>
-                <div class="note-zone" data-zone="wortels">
-                    <h3>🌱 Wortels</h3>
-                    <div class="note-content"></div>
-                </div>
-            </aside>
-        </main>
+        <aside class="notes">
+            <h2>Notities</h2>
+            <div class="note-zone" data-zone="lucht">
+                <h3>🌤️ Lucht</h3>
+                <div class="note-content"></div>
+            </div>
+            <div class="note-zone" data-zone="takken">
+                <h3>🌿 Takken</h3>
+                <div class="note-content"></div>
+            </div>
+            <div class="note-zone" data-zone="stam">
+                <h3>🪵 Stam</h3>
+                <div class="note-content"></div>
+            </div>
+            <div class="note-zone" data-zone="wortels">
+                <h3>🌱 Wortels</h3>
+                <div class="note-content"></div>
+            </div>
+        </aside>
+    </main>
 
-        <script src="script.js"></script>
-    </body>
+    <script src="script.js"></script>
+</body>
 
-    </html>
+</html>

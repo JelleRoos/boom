@@ -10,22 +10,28 @@
 
 <body>
 
+    <!-- Header met boomillustratie -->
     <header>
         <img src="img/boom.png" alt="Boom" id="boom-afbeelding" />
     </header>
 
+    <!-- Drie-koloms layout -->
     <main>
+        <!-- Toolbox -->
         <aside class="toolbox">
             <h2>Toolbox</h2>
-            <div class="kaart-template" data-type="wortel">
-                🌱 Wortelkaart
-            </div>
+            <div class="kaart-template" data-type="wortel" draggable="true">🌱 Wortelkaart</div>
+            <div class="kaart-template" data-type="tak" draggable="true">🌿 Takkaart</div>
+            <div class="kaart-template" data-type="wolk" draggable="true">☁️ Wolkkaart</div>
+            <div class="kaart-template" data-type="emotie" draggable="true">🔥 Emotiekaart</div>
         </aside>
 
+        <!-- Grid -->
         <section id="grid-container">
             <div id="grid"></div>
         </section>
 
+        <!-- Notities -->
         <aside class="notes">
             <h2>Notities</h2>
             <div class="note-zone" data-zone="lucht">
@@ -46,6 +52,9 @@
             </div>
         </aside>
     </main>
+
+    <!-- Toast container -->
+    <div id="toast-container"></div>
 
     <script src="script.js"></script>
 </body>

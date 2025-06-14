@@ -1,4 +1,4 @@
-/* Algemene basisinstellingen */
+/* Reset & basis */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -7,20 +7,20 @@
 
 body {
     font-family: system-ui, sans-serif;
-    background-color: #f9f9f9;
+    background: #f9f9f9;
     color: #333;
-    height: 100vh;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
 }
 
-/* Boomafbeelding bovenaan */
+/* Header */
 header {
     width: 100%;
-    height: 300px;
+    aspect-ratio: 16/6;
+    max-height: 250px;
     overflow: hidden;
-    position: relative;
     flex-shrink: 0;
 }
 
@@ -28,97 +28,36 @@ header {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    pointer-events: none;
 }
 
-/* Hoofdindeling */
+/* Layout */
 main {
-    display: flex;
     flex: 1;
+    display: flex;
     overflow: hidden;
 }
 
-/* Toolbox links */
+/* Toolbox */
 .toolbox {
     width: 220px;
-    background-color: #fff;
+    background: #fff;
     border-right: 1px solid #ddd;
     padding: 1rem;
     overflow-y: auto;
     flex-shrink: 0;
 }
 
-/* Notitiepaneel rechts */
-.notes {
-    width: 240px;
-    background-color: #f5f5f5;
-    border-left: 1px solid #ddd;
-    padding: 1rem;
-    overflow-y: auto;
-    flex-shrink: 0;
-}
-
-.notes h2 {
-    margin-bottom: 1rem;
-}
-
-.note-zone {
-    margin-bottom: 1.5rem;
-    padding: 0.5rem;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
-}
-
-.note-zone h3 {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-}
-
-/* Gridgedeelte midden */
-#grid-container {
-    flex: 1;
-    overflow: auto;
-    background-color: #eef1f5;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 2rem;
-}
-
-#grid {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(24, 40px);
-    grid-template-rows: repeat(12, 40px);
-    gap: 1px;
-    background-color: transparent;
-}
-
-.grid-cel {
-    width: 40px;
-    height: 40px;
-    background-color: rgba(255, 255, 255, 0.3);
-    border: 1px dashed rgba(0, 0, 0, 0.05);
-    transition: background-color 0.2s ease;
-}
-
-.grid-cel:hover {
-    background-color: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-}
-
 .kaart-template {
-    background-color: #dff0d8;
+    background: #dff0d8;
     color: #2e5e4e;
-    padding: 0.75rem 1rem;
+    padding: .75rem 1rem;
     margin-bottom: 1rem;
     border-radius: 10px;
     font-weight: bold;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     cursor: grab;
+    transition: transform .2s ease, box-shadow .2s ease;
     user-select: none;
-    transition: transform 0.2s ease;
 }
 
 .kaart-template:hover {
@@ -126,30 +65,165 @@ main {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.kaart {
-    background-color: #dff0d8;
-    color: #2e5e4e;
-    border-radius: 8px;
-    padding: 0.4rem;
-    font-size: 1rem;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    width: 100%;
-    height: 100%;
+/* Grid */
+#grid-container {
+    flex: 1;
+    background: #eef1f5;
+    overflow: auto;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: flex-start;
+    padding: 2rem;
 }
 
+#grid {
+    display: grid;
+    grid-template-columns: repeat(24, 40px);
+    grid-template-rows: repeat(24, 40px);
+    gap: 1px;
+}
+
+.grid-cel {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px dashed rgba(0, 0, 0, 0.05);
+    transition: background-color .2s;
+}
+
+.grid-cel:hover {
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+}
+
+/* Notities */
+.notes {
+    width: 240px;
+    background: #f5f5f5;
+    border-left: 1px solid #ddd;
+    padding: 1rem;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.note-zone {
+    margin-bottom: 1.5rem;
+    padding: .5rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+}
+
+.note-zone h3 {
+    margin-bottom: .5rem;
+    font-size: 1rem;
+}
+
+/* Kaart */
+.kaart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #dff0d8;
+    border-radius: 8px;
+    padding: .4rem;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all .3s ease;
+    transform-origin: center;
+    animation: fadeInPop .4s ease;
+}
+
+.kaart-icon {
+    font-size: 1.2rem;
+    margin-bottom: .4rem;
+}
+
+.kaart-text {
+    width: 100%;
+    min-height: 1.4em;
+    padding: .2rem .4rem;
+    background: inherit;
+    color: #2e5e4e;
+    text-align: center;
+    outline: none;
+    border: none;
+    white-space: pre-wrap;
+    word-break: break-word;
+    cursor: text;
+}
+
+/* Verwijderknop */
+.kaart-remove {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.4);
+    padding: 2px;
+    transition: color .2s;
+}
+
+.kaart-remove:hover {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+/* Animaties */
 @keyframes fadeInPop {
+    from {
+        opacity: 0;
+        transform: scale(.6);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Toast */
+#toast-container {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.toast {
+    background: #323232;
+    color: #fff;
+    padding: .75rem 1.25rem;
+    border-radius: 5px;
+    font-size: .9rem;
+    opacity: 0;
+    animation: slideInFadeOut 3s forwards;
+}
+
+@keyframes slideInFadeOut {
     0% {
         opacity: 0;
-        transform: scale(0.6);
+        transform: translateY(20px) scale(.9);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    80% {
+        opacity: 1;
     }
 
     100% {
-        opacity: 1;
-        transform: scale(1);
+        opacity: 0;
+        transform: translateY(-20px) scale(.9);
     }
 }

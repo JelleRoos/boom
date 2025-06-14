@@ -1,56 +1,124 @@
-// Instellingen voor het grid
-const grid = document.getElementById('grid');
-const kolommen = 24;
-const rijen = 12;
+document.addEventListener('DOMContentLoaded', () => {
+    const grid = document.getElementById('grid');
+    const kolommen = 24, rijen = 24;
+    let versleepbareType = null, verplaatsteElement = null;
 
-// Genereer het grid met lege cellen
-function maakGrid() {
-    for (let rij = 0; rij < rijen; rij++) {
-        for (let kol = 0; kol < kolommen; kol++) {
-            const cel = document.createElement('div');
-            cel.classList.add('grid-cel');
-            cel.dataset.rij = rij;
-            cel.dataset.kol = kol;
-            grid.appendChild(cel);
+    // 1) Maak grid
+    function maakGrid() {
+        grid.innerHTML = '';
+        for (let r = 0; r < rijen; r++) {
+            for (let c = 0; c < kolommen; c++) {
+                const cel = document.createElement('div');
+                cel.classList.add('grid-cel');
+                cel.dataset.rij = r; cel.dataset.kol = c;
+                cel.addEventListener('dragover', e => e.preventDefault());
+                cel.addEventListener('drop', handleDrop);
+                grid.appendChild(cel);
+            }
         }
     }
-}
 
-// Start de tool
-document.addEventListener('DOMContentLoaded', () => {
-    maakGrid();
-});
+    // 2) Toolbox sleepbaar maken
+    function initialiseerTemplates() {
+        document.querySelectorAll('.kaart-template').forEach(tpl => {
+            tpl.draggable = true;
+            tpl.addEventListener('dragstart', e => {
+                versleepbareType = e.target.dataset.type;
+                verplaatsteElement = null;
+                e.dataTransfer.setData('text/plain', versleepbareType);
+            });
+        });
+    }
 
-// Drag & drop logica
-let versleepbareKaart = null;
+    // 3) Bestaande kaarten verplaatsbaar maken
+    function initialiseerGrid() {
+        grid.addEventListener('dragstart', e => {
+            const k = e.target.closest('.kaart');
+            if (k) {
+                verplaatsteElement = k;
+                e.dataTransfer.setData('text/plain', 'move');
+            }
+        });
+    }
 
-// Maak de template sleepbaar
-document.querySelectorAll('.kaart-template').forEach(template => {
-    template.addEventListener('dragstart', e => {
-        versleepbareKaart = e.target.dataset.type;
-        e.dataTransfer.setData('text/plain', versleepbareKaart);
-    });
-
-    // Maak element officieel sleepbaar
-    template.setAttribute('draggable', true);
-});
-
-// Sta toe dat je iets op een cel dropt
-grid.querySelectorAll('.grid-cel').forEach(cel => {
-    cel.addEventListener('dragover', e => e.preventDefault());
-
-    cel.addEventListener('drop', e => {
+    // 4) Drop-handler
+    function handleDrop(e) {
         e.preventDefault();
-        if (!versleepbareKaart) return;
+        const cel = e.currentTarget;
+        // verplaats bestaand
+        if (verplaatsteElement) {
+            cel.appendChild(verplaatsteElement);
+            verplaatsteElement = null;
+            return;
+        }
+        // nieuw
+        if (versleepbareType) {
+            const kaart = maakKaart(versleepbareType);
+            cel.appendChild(kaart);
+            toonToast(`Kaart toegevoegd: ${typeBeschrijving(versleepbareType)}`);
+            versleepbareType = null;
+        }
+    }
 
+    // 5) Kaart-element maken
+    function maakKaart(type) {
+        const icoon = { wortel: '🌱', tak: '🌿', wolk: '☁️', emotie: '🔥' }[type] || '❔';
         const kaart = document.createElement('div');
         kaart.classList.add('kaart');
-        kaart.textContent = '🌱'; // of een echte iconenverwerking
-        kaart.setAttribute('contenteditable', 'true');
+        kaart.draggable = true;
 
-        kaart.style.animation = 'fadeInPop 0.4s ease';
-        cel.appendChild(kaart);
+        // Remove-knop
+        const btn = document.createElement('span');
+        btn.classList.add('kaart-remove');
+        btn.textContent = '✖';
+        btn.addEventListener('click', () => {
+            kaart.remove();
+            toonToast('Kaart verwijderd');
+        });
+        kaart.appendChild(btn);
 
-        versleepbareKaart = null;
-    });
+        // Icoon
+        const ic = document.createElement('div');
+        ic.classList.add('kaart-icon');
+        ic.textContent = icoon;
+        kaart.appendChild(ic);
+
+        // Tekstblok (contenteditable)
+        const txt = document.createElement('div');
+        txt.classList.add('kaart-text');
+        txt.setAttribute('contenteditable', 'true');
+        txt.setAttribute('data-placeholder', 'Typ hier…');
+        kaart.appendChild(txt);
+
+        // scaling (optioneel)
+        kaart.dataset.scale = 1;
+        kaart.addEventListener('wheel', e => {
+            e.preventDefault();
+            let s = parseFloat(kaart.dataset.scale);
+            s = Math.min(Math.max(s + (e.deltaY < 0 ? .1 : -.1), .5), 2);
+            kaart.dataset.scale = s;
+            kaart.style.transform = `scale(${s})`;
+        });
+
+        return kaart;
+    }
+
+    // 6) Toast
+    function toonToast(msg) {
+        const cont = document.getElementById('toast-container');
+        const t = document.createElement('div');
+        t.classList.add('toast');
+        t.textContent = msg;
+        cont.appendChild(t);
+        setTimeout(() => cont.removeChild(t), 3000);
+    }
+
+    // 7) Naam naar leesbare tekst
+    function typeBeschrijving(t) {
+        return { wortel: 'Wortelkaart', tak: 'Takkaart', wolk: 'Wolkkaart', emotie: 'Emotiekaart' }[t] || 'Kaart';
+    }
+
+    maakGrid();
+    initialiseerTemplates();
+    initialiseerGrid();
 });

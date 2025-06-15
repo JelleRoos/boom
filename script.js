@@ -1,10 +1,32 @@
 document.addEventListener('DOMContentLoaded', () => {
     const grid = document.getElementById('grid');
-    const kolommen = 24, rijen = 24;
+    const kolommen = 24;
+    const rijen = 24;
     let versleepbareType = null;
     let verplaatsteElement = null;
+    let lastBgFile = null;
 
-    // 1) Maak het 24×24-grid aan
+    // Toolbox, modals & controls
+    const btnOpenImport = document.getElementById('btn-open-import');
+    const btnOpenExport = document.getElementById('btn-open-export');
+    const backdrop = document.getElementById('modal-backdrop');
+    const modalImport = document.getElementById('modal-import');
+    const modalExport = document.getElementById('modal-export');
+    const closeBtns = document.querySelectorAll('.modal-close');
+    const inputJsonFile = document.getElementById('import-json-file');
+    const inputJsonName = document.getElementById('import-json-name');
+    const inputBgFile = document.getElementById('import-bg-file');
+    const inputBgName = document.getElementById('import-bg-name');
+    const cbExportJson = document.getElementById('export-json-cb');
+    const cbExportBg = document.getElementById('export-bg-cb');
+    const btnDoImport = document.getElementById('do-import');
+    const btnDoExport = document.getElementById('do-export');
+
+    // Background upload/reset
+    const bgUpload = document.getElementById('bg-upload');
+    const bgReset = document.getElementById('bg-reset');
+
+    // 1) Grid aanmaken
     function maakGrid() {
         grid.innerHTML = '';
         for (let r = 0; r < rijen; r++) {
@@ -20,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2) Toolbox-templates sleepbaar maken
+    // 2) Toolbox templates sleepbaar
     function initialiseerTemplates() {
         document.querySelectorAll('.kaart-template').forEach(tpl => {
             tpl.draggable = true;
@@ -32,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3) Bestaande kaarten verplaatsbaar maken
+    // 3) Kaarten verplaatsbaar
     function initialiseerGrid() {
         grid.addEventListener('dragstart', e => {
             const k = e.target.closest('.kaart');
@@ -43,19 +65,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4) Drop-handler: nieuw of verplaats bestaand
+    // 4) Drop-handler
     function handleDrop(e) {
         e.preventDefault();
         const cel = e.currentTarget;
-
-        // Verplaats bestaande kaart
         if (verplaatsteElement) {
             cel.appendChild(verplaatsteElement);
             verplaatsteElement = null;
             return;
         }
-
-        // Maak nieuwe kaart
         if (versleepbareType) {
             const kaart = maakKaart(versleepbareType);
             cel.appendChild(kaart);
@@ -64,10 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 5) Factory: maak een kaart-div op basis van type
+    // 5) Kaart-factory
     function maakKaart(type) {
         const icoonMap = { wortel: '🌱', tak: '🌿', wolk: '☁️', boom: '🌳' };
-
         const kaart = document.createElement('div');
         kaart.classList.add('kaart', `kaart--${type}`);
         kaart.draggable = true;
@@ -89,17 +106,17 @@ document.addEventListener('DOMContentLoaded', () => {
         iconDiv.textContent = icoonMap[type] || '❔';
         kaart.appendChild(iconDiv);
 
-        // Tekstvlak (contenteditable)
-        const txtDiv = document.createElement('div');
-        txtDiv.classList.add('kaart-text');
-        txtDiv.setAttribute('contenteditable', 'true');
-        txtDiv.setAttribute('data-placeholder', 'Typ hier…');
-        kaart.appendChild(txtDiv);
+        // Tekstvlak
+        const txt = document.createElement('div');
+        txt.classList.add('kaart-text');
+        txt.setAttribute('contenteditable', 'true');
+        txt.setAttribute('data-placeholder', 'Typ hier…');
+        kaart.appendChild(txt);
 
         return kaart;
     }
 
-    // 6) Toon toast-melding
+    // 6) Toast
     function toonToast(msg) {
         const cont = document.getElementById('toast-container');
         const t = document.createElement('div');
@@ -109,77 +126,119 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => cont.removeChild(t), 3000);
     }
 
-    // 7) Converteer type naar leesbare naam
+    // 7) Naamconverter
     function typeBeschrijving(t) {
-        const namen = {
-            wortel: 'Wortelkaart',
-            tak: 'Takkaart',
-            wolk: 'Wolkkaart',
-            boom: 'Boomkaart'
+        const names = {
+            wortel: 'Wortelkaart', tak: 'Takkaart',
+            wolk: 'Wolkkaart', boom: 'Boomkaart'
         };
-        return namen[t] || 'Kaart';
+        return names[t] || 'Kaart';
     }
 
-    // 8) Achtergrond uploaden/resetten op het grid
-    const bgUpload = document.getElementById('bg-upload');
-    const bgReset = document.getElementById('bg-reset');
-
+    // 8) Background upload/reset
     bgUpload.addEventListener('change', e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const url = URL.createObjectURL(file);
-        grid.style.backgroundImage = `url(${url})`;
-        grid.style.backgroundSize = 'contain';
-        grid.style.backgroundPosition = 'center';
-        grid.style.backgroundRepeat = 'no-repeat';
+        const f = e.target.files[0];
+        if (f) {
+            lastBgFile = f;
+            const url = URL.createObjectURL(f);
+            grid.style.backgroundImage = `url(${url})`;
+        }
     });
-
     bgReset.addEventListener('click', () => {
+        lastBgFile = null;
         grid.style.backgroundImage = '';
     });
 
-    // 9) Export JSON
-    document.getElementById('export-json').addEventListener('click', () => {
-        const data = [];
-        document.querySelectorAll('.grid-cel > .kaart').forEach(k => {
-            const { rij, kol } = k.parentElement.dataset;
-            const type = ['wortel', 'tak', 'wolk', 'boom'].find(t => k.classList.contains(`kaart--${t}`)) || '';
-            const text = k.querySelector('.kaart-text').textContent;
-            data.push({ type, rij: +rij, kol: +kol, text });
-        });
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const link = document.createElement('a');
-        link.download = 'boom-config.json';
-        link.href = URL.createObjectURL(blob);
-        link.click();
-        URL.revokeObjectURL(link.href);
+    // 9) Filename display in modals
+    inputJsonFile.addEventListener('change', e => {
+        const f = e.target.files[0];
+        inputJsonName.textContent = f ? f.name : 'Geen bestand gekozen';
+    });
+    inputBgFile.addEventListener('change', e => {
+        const f = e.target.files[0];
+        inputBgName.textContent = f ? f.name : 'Geen bestand gekozen';
     });
 
-    // 10) Import JSON
-    document.getElementById('import-json').addEventListener('change', e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-            try {
-                const data = JSON.parse(reader.result);
-                maakGrid();
-                data.forEach(item => {
-                    const cel = grid.querySelector(`.grid-cel[data-rij="${item.rij}"][data-kol="${item.kol}"]`);
-                    if (!cel) return;
-                    const kaart = maakKaart(item.type);
-                    kaart.querySelector('.kaart-text').textContent = item.text;
-                    cel.appendChild(kaart);
-                });
-            } catch (err) {
-                console.error('Import error:', err);
-                toonToast('Fout bij importeren JSON');
+    // 10) Modals open/close
+    function openModal(m) { backdrop.classList.remove('hidden'); m.classList.remove('hidden'); }
+    function closeModal() {
+        backdrop.classList.add('hidden');
+        modalImport.classList.add('hidden');
+        modalExport.classList.add('hidden');
+        inputJsonFile.value = '';
+        inputBgFile.value = '';
+        inputJsonName.textContent = 'Geen bestand gekozen';
+        inputBgName.textContent = 'Geen bestand gekozen';
+    }
+    btnOpenImport.addEventListener('click', () => openModal(modalImport));
+    btnOpenExport.addEventListener('click', () => openModal(modalExport));
+    backdrop.addEventListener('click', closeModal);
+    closeBtns.forEach(b => b.addEventListener('click', closeModal));
+
+    // 11) Import logic
+    btnDoImport.addEventListener('click', () => {
+        const jf = inputJsonFile.files[0];
+        if (jf) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const data = JSON.parse(reader.result);
+                    maakGrid();
+                    data.forEach(item => {
+                        const cel = grid.querySelector(`.grid-cel[data-rij="${item.rij}"][data-kol="${item.kol}"]`);
+                        if (!cel) return;
+                        const kaart = maakKaart(item.type);
+                        kaart.querySelector('.kaart-text').textContent = item.text;
+                        cel.appendChild(kaart);
+                    });
+                } catch {
+                    toonToast('Fout in JSON');
+                }
+            };
+            reader.readAsText(jf);
+        }
+        const bf = inputBgFile.files[0];
+        if (bf) {
+            lastBgFile = bf;
+            const url = URL.createObjectURL(bf);
+            grid.style.backgroundImage = `url(${url})`;
+        }
+        closeModal();
+    });
+
+    // 12) Export logic
+    btnDoExport.addEventListener('click', () => {
+        if (cbExportJson.checked) {
+            const data = [];
+            document.querySelectorAll('.grid-cel > .kaart').forEach(k => {
+                const { rij, kol } = k.parentElement.dataset;
+                const type = ['wortel', 'tak', 'wolk', 'boom']
+                    .find(t => k.classList.contains(`kaart--${t}`)) || '';
+                const text = k.querySelector('.kaart-text').textContent;
+                data.push({ type, rij: +rij, kol: +kol, text });
+            });
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.download = 'boom-config.json';
+            a.href = URL.createObjectURL(blob);
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+        if (cbExportBg.checked) {
+            if (lastBgFile) {
+                const a = document.createElement('a');
+                a.download = lastBgFile.name;
+                a.href = URL.createObjectURL(lastBgFile);
+                a.click();
+                URL.revokeObjectURL(a.href);
+            } else {
+                toonToast('Geen achtergrond geüpload');
             }
-        };
-        reader.readAsText(file);
+        }
+        closeModal();
     });
 
-    // Initialize everything
+    // Initialiseer
     maakGrid();
     initialiseerTemplates();
     initialiseerGrid();

@@ -369,3 +369,10 @@ main {
         transform: translateY(-20px) scale(.9);
     }
 }
+
+/* Maak file-name een blok en geef wat ondermarge */
+.modal-dialog .file-name {
+    display: block;
+    margin-bottom: 1rem;
+    /* pas de waarde naar wens aan */
+}

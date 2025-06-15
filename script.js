@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let versleepbareType = null;
     let verplaatsteElement = null;
 
-    // — 1) Grid aanmaken —
+    // 1) Maak het 24×24-grid aan
     function maakGrid() {
         grid.innerHTML = '';
         for (let r = 0; r < rijen; r++) {
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // — 2) Toolbox-templates sleepbaar maken —
+    // 2) Toolbox-templates sleepbaar maken
     function initialiseerTemplates() {
         document.querySelectorAll('.kaart-template').forEach(tpl => {
             tpl.draggable = true;
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // — 3) Bestaande kaarten verplaatsbaar maken —
+    // 3) Bestaande kaarten verplaatsbaar maken
     function initialiseerGrid() {
         grid.addEventListener('dragstart', e => {
             const k = e.target.closest('.kaart');
@@ -43,17 +43,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // — 4) Drop-handler —
+    // 4) Drop-handler: nieuw of verplaats bestaand
     function handleDrop(e) {
         e.preventDefault();
         const cel = e.currentTarget;
-        // verplaats bestaand
+
+        // Verplaats bestaande kaart
         if (verplaatsteElement) {
             cel.appendChild(verplaatsteElement);
             verplaatsteElement = null;
             return;
         }
-        // nieuw
+
+        // Maak nieuwe kaart
         if (versleepbareType) {
             const kaart = maakKaart(versleepbareType);
             cel.appendChild(kaart);
@@ -62,17 +64,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // — 5) Kaart-element maken —
+    // 5) Factory: maak een kaart-div op basis van type
     function maakKaart(type) {
         const icoonMap = { wortel: '🌱', tak: '🌿', wolk: '☁️', boom: '🌳' };
 
-        // 1) Hoofdkaart container met type-klasse
         const kaart = document.createElement('div');
-        kaart.classList.add('kaart', `kaart--${type}`);     // ≤ hier
+        kaart.classList.add('kaart', `kaart--${type}`);
         kaart.draggable = true;
         kaart.style.animation = 'fadeInPop .4s ease';
 
-        // 2) Verwijderknop
+        // Verwijderknop
         const btn = document.createElement('span');
         btn.classList.add('kaart-remove');
         btn.textContent = '✖';
@@ -82,24 +83,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         kaart.appendChild(btn);
 
-        // 3) Icoon bovenaan
-        const icon = document.createElement('div');
-        icon.classList.add('kaart-icon');
-        icon.textContent = icoonMap[type] || '❔';
-        kaart.appendChild(icon);
+        // Icoon
+        const iconDiv = document.createElement('div');
+        iconDiv.classList.add('kaart-icon');
+        iconDiv.textContent = icoonMap[type] || '❔';
+        kaart.appendChild(iconDiv);
 
-        // 4) Tekstvlak (contenteditable)
-        const txt = document.createElement('div');
-        txt.classList.add('kaart-text');
-        txt.setAttribute('contenteditable', 'true');
-        txt.setAttribute('data-placeholder', 'Typ hier…');
-        kaart.appendChild(txt);
+        // Tekstvlak (contenteditable)
+        const txtDiv = document.createElement('div');
+        txtDiv.classList.add('kaart-text');
+        txtDiv.setAttribute('contenteditable', 'true');
+        txtDiv.setAttribute('data-placeholder', 'Typ hier…');
+        kaart.appendChild(txtDiv);
 
         return kaart;
     }
 
-
-    // — 6) Toon toast —
+    // 6) Toon toast-melding
     function toonToast(msg) {
         const cont = document.getElementById('toast-container');
         const t = document.createElement('div');
@@ -109,18 +109,77 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => cont.removeChild(t), 3000);
     }
 
-    // — 7) Leesbare typenamen —
+    // 7) Converteer type naar leesbare naam
     function typeBeschrijving(t) {
-        const nm = {
+        const namen = {
             wortel: 'Wortelkaart',
             tak: 'Takkaart',
             wolk: 'Wolkkaart',
             boom: 'Boomkaart'
         };
-        return nm[t] || 'Kaart';
+        return namen[t] || 'Kaart';
     }
 
-    // **Initialiseer alles**
+    // 8) Achtergrond uploaden/resetten op het grid
+    const bgUpload = document.getElementById('bg-upload');
+    const bgReset = document.getElementById('bg-reset');
+
+    bgUpload.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        grid.style.backgroundImage = `url(${url})`;
+        grid.style.backgroundSize = 'contain';
+        grid.style.backgroundPosition = 'center';
+        grid.style.backgroundRepeat = 'no-repeat';
+    });
+
+    bgReset.addEventListener('click', () => {
+        grid.style.backgroundImage = '';
+    });
+
+    // 9) Export JSON
+    document.getElementById('export-json').addEventListener('click', () => {
+        const data = [];
+        document.querySelectorAll('.grid-cel > .kaart').forEach(k => {
+            const { rij, kol } = k.parentElement.dataset;
+            const type = ['wortel', 'tak', 'wolk', 'boom'].find(t => k.classList.contains(`kaart--${t}`)) || '';
+            const text = k.querySelector('.kaart-text').textContent;
+            data.push({ type, rij: +rij, kol: +kol, text });
+        });
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.download = 'boom-config.json';
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        URL.revokeObjectURL(link.href);
+    });
+
+    // 10) Import JSON
+    document.getElementById('import-json').addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            try {
+                const data = JSON.parse(reader.result);
+                maakGrid();
+                data.forEach(item => {
+                    const cel = grid.querySelector(`.grid-cel[data-rij="${item.rij}"][data-kol="${item.kol}"]`);
+                    if (!cel) return;
+                    const kaart = maakKaart(item.type);
+                    kaart.querySelector('.kaart-text').textContent = item.text;
+                    cel.appendChild(kaart);
+                });
+            } catch (err) {
+                console.error('Import error:', err);
+                toonToast('Fout bij importeren JSON');
+            }
+        };
+        reader.readAsText(file);
+    });
+
+    // Initialize everything
     maakGrid();
     initialiseerTemplates();
     initialiseerGrid();

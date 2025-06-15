@@ -31,26 +31,23 @@
             <div id="grid"></div>
         </section>
 
-        <!-- Notities -->
-        <aside class="notes">
-            <h2>Notities</h2>
-            <div class="note-zone" data-zone="lucht">
-                <h3>🌤️ Lucht</h3>
-                <div class="note-content"></div>
+        <!-- Controls rechts -->
+        <aside class="controls">
+            <h2>Controls</h2>
+
+            <!-- Achtergrond upload -->
+            <div class="control-group">
+                <h3>Achtergrond</h3>
+                <input type="file" id="bg-upload" accept="image/*" />
+                <button id="bg-reset">Reset naar standaard</button>
             </div>
-            <div class="note-zone" data-zone="takken">
-                <h3>🌿 Takken</h3>
-                <div class="note-content"></div>
+
+            <!-- Export / Import -->
+            <div class="control-group">
+                <h3>Import / Export</h3>
+                <button id="export-json">Export JSON</button>
+                <input type="file" id="import-json" accept=".json" />
             </div>
-            <div class="note-zone" data-zone="stam">
-                <h3>🪵 Stam</h3>
-                <div class="note-content"></div>
-            </div>
-            <div class="note-zone" data-zone="wortels">
-                <h3>🌱 Wortels</h3>
-                <div class="note-content"></div>
-            </div>
-        </aside>
     </main>
 
     <!-- Toast container -->

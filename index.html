@@ -5,12 +5,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Interactieve Boom-tool</title>
+
+    <!-- html2canvas CDN voor screenshot -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-    <!-- Compacte header -->
+    <!-- Header -->
     <header>
         <h1>Interactieve Boom-tool</h1>
     </header>
@@ -34,7 +38,6 @@
         <aside class="controls">
             <h2>Controls</h2>
 
-            <!-- Achtergrond-upload/reset -->
             <div class="control-group">
                 <h3>Achtergrond</h3>
                 <label class="file-label">
@@ -44,19 +47,23 @@
                 <button id="bg-reset">Reset naar standaard</button>
             </div>
 
-            <!-- Open Import/Export modals -->
             <div class="control-group">
                 <h3>Import / Export</h3>
                 <button id="btn-open-import">Importeer…</button>
                 <button id="btn-open-export">Exporteer…</button>
             </div>
+
+            <!-- Nieuw: Screenshot knop -->
+            <div class="control-group">
+                <h3>Opslaan als afbeelding</h3>
+                <button id="btn-screenshot">Download afbeelding</button>
+            </div>
         </aside>
     </main>
 
-    <!-- Modals en backdrop -->
+    <!-- Modals & Backdrop -->
     <div id="modal-backdrop" class="hidden"></div>
 
-    <!-- Import-modal -->
     <div id="modal-import" class="modal hidden">
         <div class="modal-dialog">
             <h3>Importeer configuratie</h3>
@@ -68,7 +75,7 @@
             <span id="import-json-name" class="file-name">Geen bestand gekozen</span>
 
             <label class="file-label">
-                Selecteer achtergrond (optioneel)
+                Selecteer achtergrond
                 <input type="file" id="import-bg-file" accept="image/*" />
             </label>
             <span id="import-bg-name" class="file-name">Geen bestand gekozen</span>
@@ -80,12 +87,12 @@
         </div>
     </div>
 
-    <!-- Export-modal -->
     <div id="modal-export" class="modal hidden">
         <div class="modal-dialog">
             <h3>Exporteer configuratie</h3>
-            <label><input type="checkbox" id="export-json-cb" checked /> Download JSON</label>
-            <label><input type="checkbox" id="export-bg-cb" /> Download Achtergrond</label>
+            <label><input type="checkbox" id="export-json-cb" checked /> Download JSON (plaatsing van de
+                kaartjes)</label>
+            <label><input type="checkbox" id="export-bg-cb" /> Download achtergrondafbeelding</label>
             <div class="modal-actions">
                 <button id="do-export">Download</button>
                 <button class="modal-close">Annuleer</button>
@@ -93,9 +100,7 @@
         </div>
     </div>
 
-    <!-- Toast container -->
     <div id="toast-container"></div>
-
     <script src="script.js"></script>
 </body>
 

@@ -6,13 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let verplaatsteElement = null;
     let lastBgFile = null;
 
-    // Toolbox, modals & controls
+    // Controls & modals
     const btnOpenImport = document.getElementById('btn-open-import');
     const btnOpenExport = document.getElementById('btn-open-export');
-    const backdrop = document.getElementById('modal-backdrop');
-    const modalImport = document.getElementById('modal-import');
-    const modalExport = document.getElementById('modal-export');
-    const closeBtns = document.querySelectorAll('.modal-close');
+    const btnScreenshot = document.getElementById('btn-screenshot');
+    const bgUpload = document.getElementById('bg-upload');
+    const bgReset = document.getElementById('bg-reset');
     const inputJsonFile = document.getElementById('import-json-file');
     const inputJsonName = document.getElementById('import-json-name');
     const inputBgFile = document.getElementById('import-bg-file');
@@ -21,10 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const cbExportBg = document.getElementById('export-bg-cb');
     const btnDoImport = document.getElementById('do-import');
     const btnDoExport = document.getElementById('do-export');
-
-    // Background upload/reset
-    const bgUpload = document.getElementById('bg-upload');
-    const bgReset = document.getElementById('bg-reset');
+    const backdrop = document.getElementById('modal-backdrop');
+    const modalImport = document.getElementById('modal-import');
+    const modalExport = document.getElementById('modal-export');
+    const closeBtns = document.querySelectorAll('.modal-close');
 
     // 1) Grid aanmaken
     function maakGrid() {
@@ -42,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2) Toolbox templates sleepbaar
+    // 2) Toolbox drag-start
     function initialiseerTemplates() {
         document.querySelectorAll('.kaart-template').forEach(tpl => {
             tpl.draggable = true;
@@ -54,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3) Kaarten verplaatsbaar
+    // 3) Kaart-verplaatsing binnen grid
     function initialiseerGrid() {
         grid.addEventListener('dragstart', e => {
             const k = e.target.closest('.kaart');
@@ -90,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         kaart.draggable = true;
         kaart.style.animation = 'fadeInPop .4s ease';
 
-        // Verwijderknop
+        // verwijderknop
         const btn = document.createElement('span');
         btn.classList.add('kaart-remove');
         btn.textContent = '✖';
@@ -100,13 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         kaart.appendChild(btn);
 
-        // Icoon
-        const iconDiv = document.createElement('div');
-        iconDiv.classList.add('kaart-icon');
-        iconDiv.textContent = icoonMap[type] || '❔';
-        kaart.appendChild(iconDiv);
+        // icoon
+        const ic = document.createElement('div');
+        ic.classList.add('kaart-icon');
+        ic.textContent = icoonMap[type] || '❔';
+        kaart.appendChild(ic);
 
-        // Tekstvlak
+        // tekstvlak
         const txt = document.createElement('div');
         txt.classList.add('kaart-text');
         txt.setAttribute('contenteditable', 'true');
@@ -126,16 +125,13 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => cont.removeChild(t), 3000);
     }
 
-    // 7) Naamconverter
+    // 7) typeBeschrijving
     function typeBeschrijving(t) {
-        const names = {
-            wortel: 'Wortelkaart', tak: 'Takkaart',
-            wolk: 'Wolkkaart', boom: 'Boomkaart'
-        };
+        const names = { wortel: 'Wortelkaart', tak: 'Takkaart', wolk: 'Wolkkaart', boom: 'Boomkaart' };
         return names[t] || 'Kaart';
     }
 
-    // 8) Background upload/reset
+    // 8) Achtergrond upload/reset
     bgUpload.addEventListener('change', e => {
         const f = e.target.files[0];
         if (f) {
@@ -146,20 +142,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     bgReset.addEventListener('click', () => {
         lastBgFile = null;
-        grid.style.backgroundImage = '';
+        grid.style.backgroundImage = ''; // valt terug op CSS default
     });
 
-    // 9) Filename display in modals
-    inputJsonFile.addEventListener('change', e => {
-        const f = e.target.files[0];
-        inputJsonName.textContent = f ? f.name : 'Geen bestand gekozen';
-    });
-    inputBgFile.addEventListener('change', e => {
-        const f = e.target.files[0];
-        inputBgName.textContent = f ? f.name : 'Geen bestand gekozen';
-    });
-
-    // 10) Modals open/close
+    // 9) Modals open/close
     function openModal(m) { backdrop.classList.remove('hidden'); m.classList.remove('hidden'); }
     function closeModal() {
         backdrop.classList.add('hidden');
@@ -172,10 +158,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     btnOpenImport.addEventListener('click', () => openModal(modalImport));
     btnOpenExport.addEventListener('click', () => openModal(modalExport));
-    backdrop.addEventListener('click', closeModal);
     closeBtns.forEach(b => b.addEventListener('click', closeModal));
+    backdrop.addEventListener('click', closeModal);
 
-    // 11) Import logic
+    // 10) Import
     btnDoImport.addEventListener('click', () => {
         const jf = inputJsonFile.files[0];
         if (jf) {
@@ -206,14 +192,13 @@ document.addEventListener('DOMContentLoaded', () => {
         closeModal();
     });
 
-    // 12) Export logic
+    // 11) Export
     btnDoExport.addEventListener('click', () => {
         if (cbExportJson.checked) {
             const data = [];
-            document.querySelectorAll('.grid-cel > .kaart').forEach(k => {
+            document.querySelectorAll('.grid-cel>.kaart').forEach(k => {
                 const { rij, kol } = k.parentElement.dataset;
-                const type = ['wortel', 'tak', 'wolk', 'boom']
-                    .find(t => k.classList.contains(`kaart--${t}`)) || '';
+                const type = ['wortel', 'tak', 'wolk', 'boom'].find(t => k.classList.contains(`kaart--${t}`)) || '';
                 const text = k.querySelector('.kaart-text').textContent;
                 data.push({ type, rij: +rij, kol: +kol, text });
             });
@@ -238,7 +223,20 @@ document.addEventListener('DOMContentLoaded', () => {
         closeModal();
     });
 
-    // Initialiseer
+    // 12) Screenshot
+    btnScreenshot.addEventListener('click', () => {
+        html2canvas(document.getElementById('grid')).then(canvas => {
+            canvas.toBlob(blob => {
+                const a = document.createElement('a');
+                a.download = 'mijn-boom.png';
+                a.href = URL.createObjectURL(blob);
+                a.click();
+                URL.revokeObjectURL(a.href);
+            });
+        });
+    });
+
+    // Init
     maakGrid();
     initialiseerTemplates();
     initialiseerGrid();

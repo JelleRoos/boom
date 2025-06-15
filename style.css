@@ -1,4 +1,4 @@
-/* — Reset & basis — */
+/* — Reset & Basis — */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -87,6 +87,7 @@ main {
     grid-template-columns: repeat(24, 40px);
     grid-template-rows: repeat(24, 40px);
     gap: 1px;
+
     background-image: url('img/boom.png');
     background-size: contain;
     background-position: center center;
@@ -147,7 +148,7 @@ main {
     background: #eee;
 }
 
-/* — Custom file-label + filename (for modals) — */
+/* — Custom file-label + filename — */
 .file-label {
     display: inline-block;
     position: relative;
@@ -175,6 +176,10 @@ main {
     margin-left: .5rem;
     font-style: italic;
     color: #555;
+
+    /* maak blok en marge onder voor spacing */
+    display: block;
+    margin-bottom: 1rem;
 }
 
 /* — Kaart styling — */
@@ -187,7 +192,6 @@ main {
     border-radius: 8px;
     padding: .4rem;
     min-width: calc(40px * 3);
-    height: auto;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: all .3s ease;
 }
@@ -319,7 +323,7 @@ main {
     background: #fff;
     cursor: pointer;
     border-radius: 4px;
-    transition: background .2 ease;
+    transition: background .2s ease;
 }
 
 .modal-actions button:hover {
@@ -368,11 +372,4 @@ main {
         opacity: 0;
         transform: translateY(-20px) scale(.9);
     }
-}
-
-/* Maak file-name een blok en geef wat ondermarge */
-.modal-dialog .file-name {
-    display: block;
-    margin-bottom: 1rem;
-    /* pas de waarde naar wens aan */
 }

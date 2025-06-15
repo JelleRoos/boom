@@ -89,6 +89,7 @@ main {
     background: rgba(255, 255, 255, 0.3);
     border: 1px dashed rgba(0, 0, 0, 0.05);
     transition: background-color .2s;
+    overflow: visible;
 }
 
 .grid-cel:hover {
@@ -127,8 +128,8 @@ main {
     background: #dff0d8;
     border-radius: 8px;
     padding: .4rem;
-    width: 100%;
-    height: 100%;
+    min-width: calc(40px * 3);
+    height: auto;
     position: relative;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: all .3s ease;
@@ -142,7 +143,7 @@ main {
 }
 
 .kaart-text {
-    width: 100%;
+    width: inherit;
     min-height: 1.4em;
     padding: .2rem .4rem;
     background: inherit;
@@ -150,9 +151,11 @@ main {
     text-align: center;
     outline: none;
     border: none;
-    white-space: pre-wrap;
-    word-break: break-word;
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: normal;
     cursor: text;
+
 }
 
 /* Verwijderknop */

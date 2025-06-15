@@ -1,16 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
     const grid = document.getElementById('grid');
     const kolommen = 24, rijen = 24;
-    let versleepbareType = null, verplaatsteElement = null;
+    let versleepbareType = null;
+    let verplaatsteElement = null;
 
-    // 1) Maak grid
+    // — 1) Grid aanmaken —
     function maakGrid() {
         grid.innerHTML = '';
         for (let r = 0; r < rijen; r++) {
             for (let c = 0; c < kolommen; c++) {
                 const cel = document.createElement('div');
                 cel.classList.add('grid-cel');
-                cel.dataset.rij = r; cel.dataset.kol = c;
+                cel.dataset.rij = r;
+                cel.dataset.kol = c;
                 cel.addEventListener('dragover', e => e.preventDefault());
                 cel.addEventListener('drop', handleDrop);
                 grid.appendChild(cel);
@@ -18,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2) Toolbox sleepbaar maken
+    // — 2) Toolbox-templates sleepbaar maken —
     function initialiseerTemplates() {
         document.querySelectorAll('.kaart-template').forEach(tpl => {
             tpl.draggable = true;
@@ -30,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3) Bestaande kaarten verplaatsbaar maken
+    // — 3) Bestaande kaarten verplaatsbaar maken —
     function initialiseerGrid() {
         grid.addEventListener('dragstart', e => {
             const k = e.target.closest('.kaart');
@@ -41,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4) Drop-handler
+    // — 4) Drop-handler —
     function handleDrop(e) {
         e.preventDefault();
         const cel = e.currentTarget;
@@ -60,14 +62,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 5) Kaart-element maken
+    // — 5) Kaart-element maken —
     function maakKaart(type) {
-        const icoon = { wortel: '🌱', tak: '🌿', wolk: '☁️', emotie: '🔥' }[type] || '❔';
+        const icoonMap = { wortel: '🌱', tak: '🌿', wolk: '☁️', emotie: '🔥' };
         const kaart = document.createElement('div');
         kaart.classList.add('kaart');
         kaart.draggable = true;
+        kaart.style.animation = 'fadeInPop .4s ease';
 
-        // Remove-knop
+        // ✖ Verwijderknop
         const btn = document.createElement('span');
         btn.classList.add('kaart-remove');
         btn.textContent = '✖';
@@ -78,32 +81,22 @@ document.addEventListener('DOMContentLoaded', () => {
         kaart.appendChild(btn);
 
         // Icoon
-        const ic = document.createElement('div');
-        ic.classList.add('kaart-icon');
-        ic.textContent = icoon;
-        kaart.appendChild(ic);
+        const icon = document.createElement('div');
+        icon.classList.add('kaart-icon');
+        icon.textContent = icoonMap[type] || '❔';
+        kaart.appendChild(icon);
 
-        // Tekstblok (contenteditable)
+        // Tekstvlak (contenteditable)
         const txt = document.createElement('div');
         txt.classList.add('kaart-text');
         txt.setAttribute('contenteditable', 'true');
         txt.setAttribute('data-placeholder', 'Typ hier…');
         kaart.appendChild(txt);
 
-        // scaling (optioneel)
-        kaart.dataset.scale = 1;
-        kaart.addEventListener('wheel', e => {
-            e.preventDefault();
-            let s = parseFloat(kaart.dataset.scale);
-            s = Math.min(Math.max(s + (e.deltaY < 0 ? .1 : -.1), .5), 2);
-            kaart.dataset.scale = s;
-            kaart.style.transform = `scale(${s})`;
-        });
-
         return kaart;
     }
 
-    // 6) Toast
+    // — 6) Toon toast —
     function toonToast(msg) {
         const cont = document.getElementById('toast-container');
         const t = document.createElement('div');
@@ -113,11 +106,18 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => cont.removeChild(t), 3000);
     }
 
-    // 7) Naam naar leesbare tekst
+    // — 7) Leesbare typenamen —
     function typeBeschrijving(t) {
-        return { wortel: 'Wortelkaart', tak: 'Takkaart', wolk: 'Wolkkaart', emotie: 'Emotiekaart' }[t] || 'Kaart';
+        const nm = {
+            wortel: 'Wortelkaart',
+            tak: 'Takkaart',
+            wolk: 'Wolkkaart',
+            emotie: 'Emotiekaart'
+        };
+        return nm[t] || 'Kaart';
     }
 
+    // **Initialiseer alles**
     maakGrid();
     initialiseerTemplates();
     initialiseerGrid();

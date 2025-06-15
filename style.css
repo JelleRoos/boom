@@ -270,7 +270,7 @@ main {
 
 /* Boomkaart: donkerdere, rijke bastkleur */
 .kaart--boom {
-    background-color: #6B3E26;
+    background-color: #7B4F27;
     /* donker chocoladebruin */
     color: #FFFFFF;
     /* witte tekst voor leesbaarheid */
@@ -316,7 +316,7 @@ main {
 }
 
 .kaart-template[data-type="boom"] {
-    background-color: #6B3E26;
+    background-color: #7B4F27;
     /* donker chocoladebruin */
     color: #FFFFFF;
 }

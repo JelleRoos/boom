@@ -238,3 +238,91 @@ main {
         transform: translateY(-20px) scale(.9);
     }
 }
+
+/* — Kaartkleuren per type — */
+.kaart--wortel {
+    /* donkerbruin, wortel in de grond */
+    background-color: #8B4513;
+    color: #ffffff;
+    /* witte tekst voor contrast */
+}
+
+.kaart--tak {
+    /* lichtgroen voor bladeren */
+    background-color: #dff0d8;
+    /* blijft zoals nu */
+    color: #2e5e4e;
+}
+
+.kaart--wolk {
+    /* lichtblauw voor de lucht */
+    background-color: #add8e6;
+    color: #2e5e4e;
+}
+
+/* Wortelkaart: lichtere, zandbruine achtergrond */
+.kaart--wortel {
+    background-color: #F4E1C1;
+    /* zandbeige */
+    color: #2e5e4e;
+    /* donkergroen voor contrast */
+}
+
+/* Boomkaart: donkerdere, rijke bastkleur */
+.kaart--boom {
+    background-color: #6B3E26;
+    /* donker chocoladebruin */
+    color: #FFFFFF;
+    /* witte tekst voor leesbaarheid */
+}
+
+/* Zorg dat in Boomkaarten álle tekst wit is */
+.kaart--boom,
+.kaart--boom .kaart-text,
+.kaart--boom .kaart-icon,
+.kaart--boom .note-content {
+    /* mocht je notities in de kaart hebben */
+    color: #FFFFFF !important;
+}
+
+/* Reset icon en remove-knop kleuren */
+.kaart--wortel .kaart-icon,
+.kaart--wortel .kaart-remove {
+    color: #2e5e4e;
+}
+
+.kaart--boom .kaart-icon,
+.kaart--boom .kaart-remove {
+    color: #FFFFFF;
+}
+
+/* Kleur de templates links mee per type */
+.kaart-template[data-type="wortel"] {
+    background-color: #F4E1C1;
+    /* zandbeige */
+    color: #2e5e4e;
+}
+
+.kaart-template[data-type="tak"] {
+    background-color: #dff0d8;
+    /* lichtgroen */
+    color: #2e5e4e;
+}
+
+.kaart-template[data-type="wolk"] {
+    background-color: #add8e6;
+    /* lichtblauw */
+    color: #2e5e4e;
+}
+
+.kaart-template[data-type="boom"] {
+    background-color: #6B3E26;
+    /* donker chocoladebruin */
+    color: #FFFFFF;
+}
+
+/* Hover-styling blijft hetzelfde, of je kunt ’m ook type-specifiek kleuren */
+.kaart-template[data-type="boom"]:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}

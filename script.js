@@ -64,13 +64,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // — 5) Kaart-element maken —
     function maakKaart(type) {
-        const icoonMap = { wortel: '🌱', tak: '🌿', wolk: '☁️', emotie: '🔥' };
+        const icoonMap = { wortel: '🌱', tak: '🌿', wolk: '☁️', boom: '🌳' };
+
+        // 1) Hoofdkaart container met type-klasse
         const kaart = document.createElement('div');
-        kaart.classList.add('kaart');
+        kaart.classList.add('kaart', `kaart--${type}`);     // ≤ hier
         kaart.draggable = true;
         kaart.style.animation = 'fadeInPop .4s ease';
 
-        // ✖ Verwijderknop
+        // 2) Verwijderknop
         const btn = document.createElement('span');
         btn.classList.add('kaart-remove');
         btn.textContent = '✖';
@@ -80,13 +82,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         kaart.appendChild(btn);
 
-        // Icoon
+        // 3) Icoon bovenaan
         const icon = document.createElement('div');
         icon.classList.add('kaart-icon');
         icon.textContent = icoonMap[type] || '❔';
         kaart.appendChild(icon);
 
-        // Tekstvlak (contenteditable)
+        // 4) Tekstvlak (contenteditable)
         const txt = document.createElement('div');
         txt.classList.add('kaart-text');
         txt.setAttribute('contenteditable', 'true');
@@ -95,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return kaart;
     }
+
 
     // — 6) Toon toast —
     function toonToast(msg) {
@@ -112,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
             wortel: 'Wortelkaart',
             tak: 'Takkaart',
             wolk: 'Wolkkaart',
-            emotie: 'Emotiekaart'
+            boom: 'Boomkaart'
         };
         return nm[t] || 'Kaart';
     }

@@ -373,3 +373,7 @@ main {
         transform: translateY(-20px) scale(.9);
     }
 }
+
+.kaart--boom .kaart-text {
+    color: #FFFFFF;
+}

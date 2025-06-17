@@ -106,10 +106,13 @@ document.addEventListener('DOMContentLoaded', () => {
         kaart.appendChild(ic);
 
         // tekstvlak
+        // tekstvlak
         const txt = document.createElement('div');
         txt.classList.add('kaart-text');
         txt.setAttribute('contenteditable', 'true');
         txt.setAttribute('data-placeholder', 'Typ hier…');
+        txt.setAttribute('spellcheck', 'false'); // 🛑 geen spellingscontrole
+
         kaart.appendChild(txt);
 
         return kaart;
